@@ -21,6 +21,9 @@ func main() {
 	}
 
 	if *textPtr != "" {
+		fmt.Print("|")
+		fmt.Print(*textPtr)
+		fmt.Print("|")
 		hashAndSalt([]byte(*textPtr))
 	} else {
 		if fileIsPresent(*filePtr) {

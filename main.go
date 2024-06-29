@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
 	"os"
 
 	"golang.org/x/crypto/bcrypt"
@@ -27,7 +26,7 @@ func main() {
 		hashAndSalt([]byte(*textPtr))
 	} else {
 		if fileIsPresent(*filePtr) {
-			bytes, err := ioutil.ReadFile(*filePtr)
+			bytes, err := os.ReadFile(*filePtr)
 			if err != nil {
 				fmt.Print(err)
 			}

@@ -1,4 +1,4 @@
-FROM busybox:1.36
+FROM busybox:1.37
 
 COPY /home/runner/work/bcrypt/bcrypt /home/
 

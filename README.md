@@ -2,7 +2,7 @@
 bcrypt command line tool
 
 # build
-* go get -d -v
+* go get -v
 * go clean
 * go build
 

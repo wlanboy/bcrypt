@@ -1,4 +1,4 @@
-FROM busybox:1.36
+FROM busybox:1.37
 
 ARG BIN_FILE
 ADD ${BIN_FILE} /

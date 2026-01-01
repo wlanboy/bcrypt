@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/sha256"
 	"flag"
 	"fmt"
 	"os"
@@ -9,9 +10,8 @@ import (
 )
 
 func main() {
-	textPtr := flag.String("text", "", "Text to bcryt hash.")
-	filePtr := flag.String("file", "", "File to bcryt hash.")
-
+	textPtr := flag.String("text", "", "Text to bcrypt hash.")
+	filePtr := flag.String("file", "", "File to bcrypt hash.")
 	flag.Parse()
 
 	if *textPtr == "" && *filePtr == "" {
@@ -19,37 +19,25 @@ func main() {
 		os.Exit(1)
 	}
 
-	if *textPtr != "" {
-		fmt.Print("|")
-		fmt.Print(*textPtr)
-		fmt.Print("|")
-		hashAndSalt([]byte(*textPtr))
-	} else {
-		if fileIsPresent(*filePtr) {
-			bytes, err := os.ReadFile(*filePtr)
-			if err != nil {
-				fmt.Print(err)
-			}
-			hashAndSalt(bytes)
-		} else {
-			fmt.Println("file not found")
-		}
-	}
-}
-
-func hashAndSalt(text []byte) {
-	hash, err := bcrypt.GenerateFromPassword(text, bcrypt.MinCost)
+	hash, err := HashTextOrFile(*textPtr, *filePtr)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
+
 	fmt.Println(string(hash))
 }
 
-func fileIsPresent(name string) bool {
-	if _, err := os.Stat(name); err != nil {
-		if os.IsNotExist(err) {
-			return false
-		}
+func HashTextOrFile(text string, filePath string) ([]byte, error) {
+	if text != "" {
+		return bcrypt.GenerateFromPassword([]byte(text), bcrypt.DefaultCost)
 	}
-	return true
+
+	data, err := os.ReadFile(filePath)
+	if err != nil {
+		return nil, fmt.Errorf("error reading file: %w", err)
+	}
+
+	sum := sha256.Sum256(data)
+	return bcrypt.GenerateFromPassword(sum[:], bcrypt.DefaultCost)
 }

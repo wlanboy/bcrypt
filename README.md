@@ -5,6 +5,7 @@ bcrypt command line tool
 * go get -v
 * go clean
 * go build
+* go test
 
 # run
 * go run main.go
@@ -14,8 +15,8 @@ bcrypt command line tool
 * dlv debug ./goservice
 
 # hash text
-* bcrypt -text "hello world"
-* bcrypt -file .gitignore
+* ./bcrypt -text "hello world"
+* ./bcrypt -file .gitignore
 
 # docker hub
 * https://hub.docker.com/repository/docker/wlanboy/bcrypt

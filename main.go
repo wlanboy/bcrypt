@@ -30,6 +30,9 @@ func main() {
 
 func HashTextOrFile(text string, filePath string) ([]byte, error) {
 	if text != "" {
+		if len([]byte(text)) > 72 {
+			return nil, fmt.Errorf("text exceeds 72 bytes (bcrypt limit): %d bytes", len([]byte(text)))
+		}
 		return bcrypt.GenerateFromPassword([]byte(text), bcrypt.DefaultCost)
 	}
 

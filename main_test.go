@@ -48,10 +48,27 @@ func TestMissingFile(t *testing.T) {
 }
 
 func TestDifferentInputsProduceDifferentHashes(t *testing.T) {
-	h1, _ := HashTextOrFile("a", "")
-	h2, _ := HashTextOrFile("b", "")
+	h1, err := HashTextOrFile("a", "")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	h2, err := HashTextOrFile("b", "")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
 
-	if string(h1) == string(h2) {
-		t.Fatalf("different inputs should not produce identical hashes")
+	if bcrypt.CompareHashAndPassword(h1, []byte("b")) == nil {
+		t.Fatalf("hash of 'a' should not match 'b'")
+	}
+	if bcrypt.CompareHashAndPassword(h2, []byte("a")) == nil {
+		t.Fatalf("hash of 'b' should not match 'a'")
+	}
+}
+
+func TestTextTooLong(t *testing.T) {
+	long := string(make([]byte, 73))
+	_, err := HashTextOrFile(long, "")
+	if err == nil {
+		t.Fatalf("expected error for text exceeding 72 bytes, got nil")
 	}
 }

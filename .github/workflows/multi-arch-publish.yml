@@ -1,9 +1,6 @@
 name: Docker multi-arch build and publish
 
 on:
-  push:
-    tags:
-      - '*'
   workflow_dispatch:
 
 permissions:

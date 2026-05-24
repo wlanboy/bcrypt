@@ -38,3 +38,7 @@ bcrypt command line tool
 * alias bcrypt="docker run -i --rm wlanboy/bcrypt"
 * bcrypt -text "hello world"
 * echo "hello world" | bcrypt
+
+# multi-arch build (amd64 + arm64)
+* docker buildx create --use
+* docker buildx build --platform linux/amd64,linux/arm64 -t wlanboy/bcrypt:latest -f Dockerfile.multiarch .

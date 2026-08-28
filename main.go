@@ -13,9 +13,10 @@ import (
 
 func main() {
 	textPtr := flag.String("text", "", "Text to bcrypt hash.")
-	filePtr := flag.String("file", "", "File to bcrypt hash.")
+	filePtr := flag.String("file", "", "File to bcrypt hash (use - to read from stdin).")
 	verifyPtr := flag.String("verify", "", "Bcrypt hash to verify against.")
 	costPtr := flag.Int("cost", bcrypt.DefaultCost, fmt.Sprintf("Bcrypt cost factor (%d-%d).", bcrypt.MinCost, bcrypt.MaxCost))
+	rawPtr := flag.Bool("raw", false, "Don't trim a trailing CR/LF from -text or stdin input.")
 	flag.Parse()
 
 	if *costPtr < bcrypt.MinCost || *costPtr > bcrypt.MaxCost {
@@ -30,7 +31,10 @@ func main() {
 			fmt.Fprintln(os.Stderr, err)
 			os.Exit(1)
 		}
-		text = strings.TrimRight(string(data), "\r\n")
+		text = string(data)
+		if !*rawPtr {
+			text = strings.TrimRight(text, "\r\n")
+		}
 	}
 
 	if text == "" && *filePtr == "" {
@@ -57,6 +61,13 @@ func main() {
 	fmt.Println(string(hash))
 }
 
+func readFileOrStdin(filePath string) ([]byte, error) {
+	if filePath == "-" {
+		return io.ReadAll(os.Stdin)
+	}
+	return os.ReadFile(filePath)
+}
+
 func HashTextOrFile(text string, filePath string, cost int) ([]byte, error) {
 	if text != "" {
 		if len([]byte(text)) > 72 {
@@ -65,7 +76,7 @@ func HashTextOrFile(text string, filePath string, cost int) ([]byte, error) {
 		return bcrypt.GenerateFromPassword([]byte(text), cost)
 	}
 
-	data, err := os.ReadFile(filePath)
+	data, err := readFileOrStdin(filePath)
 	if err != nil {
 		return nil, fmt.Errorf("error reading file: %w", err)
 	}
@@ -76,7 +87,7 @@ func HashTextOrFile(text string, filePath string, cost int) ([]byte, error) {
 
 func VerifyTextOrFile(text string, filePath string, hash string) error {
 	if filePath != "" {
-		data, err := os.ReadFile(filePath)
+		data, err := readFileOrStdin(filePath)
 		if err != nil {
 			return fmt.Errorf("error reading file: %w", err)
 		}

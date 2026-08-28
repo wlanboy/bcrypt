@@ -14,22 +14,28 @@ bcrypt command line tool
 
 # stdin
 * echo "hello world" | ./bcrypt
+* cat myfile | ./bcrypt -file -
 
 # verify
 * ./bcrypt -text "hello world" -verify "$HASH"
 * ./bcrypt -file .gitignore -verify "$HASH"
 * echo "hello world" | ./bcrypt -verify "$HASH"
+* cat myfile | ./bcrypt -file - -verify "$HASH"
 
 # custom cost (default: 10, range: 4-31)
 * ./bcrypt -text "hello world" -cost 12
+
+# raw mode (keep a trailing CR/LF instead of trimming it)
+* echo "hello world" | ./bcrypt -raw
 
 # flags
 | Flag | Description |
 |------|-------------|
 | `-text` | Text to bcrypt hash |
-| `-file` | File to bcrypt hash (SHA-256 prehash) |
+| `-file` | File to bcrypt hash (SHA-256 prehash); use `-` to read from stdin |
 | `-verify` | Bcrypt hash to verify against |
 | `-cost` | Cost factor, default 10, range 4-31 |
+| `-raw` | Don't trim a trailing CR/LF from `-text` or stdin input |
 
 # docker hub
 * https://hub.docker.com/repository/docker/wlanboy/bcrypt

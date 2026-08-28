@@ -133,3 +133,47 @@ func TestVerifyFileMissing(t *testing.T) {
 		t.Fatalf("expected error for missing file")
 	}
 }
+
+func withStdin(t *testing.T, content string) {
+	t.Helper()
+	r, w, err := os.Pipe()
+	if err != nil {
+		t.Fatalf("failed to create pipe: %v", err)
+	}
+	if _, err := w.WriteString(content); err != nil {
+		t.Fatalf("failed to write to pipe: %v", err)
+	}
+	w.Close()
+
+	oldStdin := os.Stdin
+	os.Stdin = r
+	t.Cleanup(func() { os.Stdin = oldStdin })
+}
+
+func TestHashFileFromStdin(t *testing.T) {
+	withStdin(t, "filecontent")
+
+	hash, err := HashTextOrFile("", "-", bcrypt.DefaultCost)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	sum := sha256.Sum256([]byte("filecontent"))
+	if bcrypt.CompareHashAndPassword(hash, sum[:]) != nil {
+		t.Fatalf("hash does not match SHA256(filecontent)")
+	}
+}
+
+func TestVerifyFileFromStdin(t *testing.T) {
+	sum := sha256.Sum256([]byte("filecontent"))
+	hash, err := bcrypt.GenerateFromPassword(sum[:], bcrypt.DefaultCost)
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+
+	withStdin(t, "filecontent")
+
+	if err := VerifyTextOrFile("", "-", string(hash)); err != nil {
+		t.Fatalf("stdin file verification failed: %v", err)
+	}
+}

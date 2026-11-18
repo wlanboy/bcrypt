@@ -2,15 +2,10 @@ FROM golang:1.27 AS builder
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download
-COPY . .
-RUN CGO_ENABLED=0 go build -a -installsuffix cgo -o bcrypt .
+COPY *.go ./
+RUN CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o bcrypt .
 
-FROM busybox:1.38
-RUN mkdir -p /usr/local/share/busybox \
-    && echo "/bin/busybox sh" > /usr/local/share/busybox/sh \
-    && chmod +x /usr/local/share/busybox/sh
-RUN addgroup -S bcrypt && adduser -S bcrypt -G bcrypt -s /usr/local/share/busybox/sh
+FROM scratch
 COPY --from=builder /src/bcrypt /bcrypt
-USER bcrypt
-VOLUME /home/bcrypt
+USER 65534:65534
 ENTRYPOINT ["/bcrypt"]

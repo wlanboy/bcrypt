@@ -1,13 +1,13 @@
-FROM busybox:1.38
+FROM --platform=$BUILDPLATFORM golang:1.27 AS builder
+ARG TARGETOS
+ARG TARGETARCH
+WORKDIR /src
+COPY go.mod go.sum ./
+RUN go mod download
+COPY *.go ./
+RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w" -o bcrypt .
 
-ARG BIN_FILE
-ADD ${BIN_FILE} /
-
-RUN mkdir -p /usr/local/share/busybox && echo "/bin/busybox sh" > /usr/local/share/busybox/sh && chmod +x /usr/local/share/busybox/sh
-RUN addgroup -S bcrypt && adduser -S bcrypt -G bcrypt -s /usr/local/share/busybox/sh
-
-USER bcrypt
-
-VOLUME /home/bcrypt
-
+FROM scratch
+COPY --from=builder /src/bcrypt /bcrypt
+USER 65534:65534
 ENTRYPOINT ["/bcrypt"]

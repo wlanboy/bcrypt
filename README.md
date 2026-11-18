@@ -9,6 +9,8 @@ bcrypt command line tool
 # hash text
 * ./bcrypt -text "hello world"
 
+Use `-text` only for tests. Arguments show up in `ps` and in the shell history, so pass real passwords via stdin.
+
 # hash file
 * ./bcrypt -file .gitignore
 
@@ -42,9 +44,11 @@ bcrypt command line tool
 
 # usage with docker
 * alias bcrypt="docker run -i --rm wlanboy/bcrypt"
-* bcrypt -text "hello world"
-* echo "hello world" | bcrypt
+* read -rs PW; printf '%s' "$PW" | bcrypt; unset PW
+* cat myfile | bcrypt -file -
+
+Don't pass secrets with `-text` here either: container arguments also show up in `docker ps --no-trunc` and `docker inspect`.
 
 # multi-arch build (amd64 + arm64)
 * docker buildx create --use
-* docker buildx build --platform linux/amd64,linux/arm64 -t wlanboy/bcrypt:latest -f Dockerfile.multiarch .
+* docker buildx build --platform linux/amd64,linux/arm64 -t wlanboy/bcrypt:latest .

@@ -8,6 +8,9 @@ COPY *.go ./
 RUN CGO_ENABLED=0 GOOS=$TARGETOS GOARCH=$TARGETARCH go build -trimpath -ldflags="-s -w" -o bcrypt .
 
 FROM scratch
+LABEL org.opencontainers.image.source="https://github.com/wlanboy/bcrypt" \
+      org.opencontainers.image.description="bcrypt command line tool" \
+      org.opencontainers.image.licenses="Apache-2.0"
 COPY --from=builder /src/bcrypt /bcrypt
 USER 65534:65534
 ENTRYPOINT ["/bcrypt"]

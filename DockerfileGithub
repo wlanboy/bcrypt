@@ -1,5 +1,0 @@
-FROM busybox:1.37
-
-COPY /home/runner/work/bcrypt/bcrypt /home/
-
-CMD ["/home/bcrypt"]

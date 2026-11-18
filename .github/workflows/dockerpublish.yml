@@ -24,6 +24,8 @@ jobs:
         username: ${{ secrets.DOCKER_USERNAME }}
         password: ${{ secrets.DOCKER_PASSWORD }}
     - name: Build the Docker image
-      run: docker build -t wlanboy/bcrypt:latest .
+      env:
+        VERSION: ${{ github.ref_name }}
+      run: docker build --build-arg VERSION="$VERSION" -t wlanboy/bcrypt:latest .
     - name: Docker Push
       run: docker push wlanboy/bcrypt:latest

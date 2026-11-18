@@ -35,5 +35,7 @@ jobs:
         platforms: linux/amd64,linux/arm64
         push: true
         tags: wlanboy/bcrypt:latest
+        build-args: |
+          VERSION=${{ github.ref_name }}
         cache-from: type=gha
         cache-to: type=gha,mode=max

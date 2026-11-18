@@ -1,7 +1,6 @@
-.git
-.gitignore
-.github
-*.md
-*.log
-.idea/
-.DS_Store
+# Erlaubnisliste: alles ausschließen, nur das Nötige zulassen
+*
+!go.mod
+!go.sum
+!*.go
+!bcrypt

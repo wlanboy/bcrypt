@@ -1,5 +1,5 @@
 # bcrypt
-bcrypt command line tool
+bcrypt command line tool, build with golang. 
 
 # build
 * go mod download

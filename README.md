@@ -1,5 +1,5 @@
 # bcrypt
-bcrypt command line tool, build with golang. 
+bcrypt command line tool, built with Go. It hashes passwords and files with bcrypt, checks a password against an existing hash and prints `user:hash` lines for htpasswd files (nginx, Apache, Traefik).
 
 # build
 * go mod download
